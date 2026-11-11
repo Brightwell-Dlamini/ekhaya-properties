@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,20 +35,38 @@ const categoryFilters: CategoryFilter[] = [
 const statusFilters: StatusFilter[] = ["All", "For Sale", "To Let"];
 
 export default function PropertyGrid() {
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("All");
   const [status, setStatus] = useState<StatusFilter>("All");
   const [showFilters, setShowFilters] = useState(false);
 
+  useEffect(() => {
+    const s = searchParams.get("status");
+    if (s === "For Sale" || s === "To Let") {
+      setStatus(s);
+      setShowFilters(true);
+    }
+    const c = searchParams.get("category");
+    if (
+      c === "Houses" ||
+      c === "Apartments" ||
+      c === "Commercial" ||
+      c === "Land"
+    ) {
+      setCategory(c);
+      setShowFilters(true);
+    }
+    const q = searchParams.get("q");
+    if (q) setQuery(q);
+  }, [searchParams]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     return properties.filter((p) => {
       if (category !== "All" && p.category !== category) return false;
       if (status !== "All" && p.type !== status) return false;
-
       if (!q) return true;
-
       const haystack = [
         p.title,
         p.location,
@@ -59,7 +78,6 @@ export default function PropertyGrid() {
       ]
         .join(" ")
         .toLowerCase();
-
       return haystack.includes(q);
     });
   }, [query, category, status]);
@@ -100,7 +118,7 @@ export default function PropertyGrid() {
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-charcoal/40 transition-colors hover:bg-sand-200 hover:text-charcoal"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-charcoal/40 hover:bg-sand-200 hover:text-charcoal"
                 aria-label="Clear search"
               >
                 <X className="h-4 w-4" />
@@ -112,7 +130,7 @@ export default function PropertyGrid() {
             type="button"
             onClick={() => setShowFilters((v) => !v)}
             className={cn(
-              "inline-flex items-center justify-center gap-2 rounded-sm border px-5 py-3.5 text-sm font-medium transition-colors sm:w-auto",
+              "inline-flex items-center justify-center gap-2 rounded-sm border px-5 py-3.5 text-sm font-medium transition-colors",
               showFilters || hasActiveFilters
                 ? "border-charcoal bg-charcoal text-white"
                 : "border-sand-300 bg-white text-charcoal hover:border-charcoal/40"
@@ -158,7 +176,7 @@ export default function PropertyGrid() {
                               "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
                               status === s
                                 ? "bg-charcoal text-white"
-                                : "bg-sand-100 text-charcoal/70 hover:bg-sand-200 hover:text-charcoal"
+                                : "bg-sand-100 text-charcoal/70 hover:bg-sand-200"
                             )}
                           >
                             {s === "All" ? "Any status" : s}
@@ -166,7 +184,6 @@ export default function PropertyGrid() {
                         ))}
                       </div>
                     </div>
-
                     <div>
                       <p className="mb-2.5 text-xs font-medium tracking-wide uppercase text-charcoal/50">
                         Category
@@ -181,7 +198,7 @@ export default function PropertyGrid() {
                               "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
                               category === c
                                 ? "bg-charcoal text-white"
-                                : "bg-sand-100 text-charcoal/70 hover:bg-sand-200 hover:text-charcoal"
+                                : "bg-sand-100 text-charcoal/70 hover:bg-sand-200"
                             )}
                           >
                             {c === "All" ? "All types" : c}
@@ -190,12 +207,11 @@ export default function PropertyGrid() {
                       </div>
                     </div>
                   </div>
-
                   {hasActiveFilters && (
                     <button
                       type="button"
                       onClick={clearAll}
-                      className="shrink-0 text-sm font-medium text-copper transition-colors hover:text-copper-600"
+                      className="text-sm font-medium text-copper hover:text-copper-600"
                     >
                       Clear all
                     </button>
@@ -215,22 +231,10 @@ export default function PropertyGrid() {
               <span className="text-charcoal/40"> matching your criteria</span>
             )}
           </p>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearAll}
-              className="font-medium text-copper transition-colors hover:text-copper-600 sm:hidden"
-            >
-              Clear
-            </button>
-          )}
         </div>
 
         {filtered.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <motion.div layout className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {filtered.map((property, index) => (
                 <motion.article
@@ -269,26 +273,20 @@ export default function PropertyGrid() {
                         </span>
                       </div>
                     </div>
-
                     <div className="p-6">
                       <div className="mb-2 flex items-center gap-1.5 text-sm text-charcoal/60">
                         <MapPin className="h-3.5 w-3.5" />
                         <span>{property.location}</span>
                       </div>
-
-                      <h3 className="mb-3 font-serif text-xl font-medium leading-snug text-charcoal transition-colors group-hover:text-copper">
+                      <h3 className="mb-3 font-serif text-xl font-medium leading-snug text-charcoal group-hover:text-copper">
                         {property.title}
                       </h3>
-
                       <p className="mb-4 text-lg font-semibold tracking-tight text-charcoal">
                         {property.currency} {property.price}
                         {property.type === "To Let" && (
-                          <span className="ml-1 text-sm font-normal text-charcoal/50">
-                            / month
-                          </span>
+                          <span className="ml-1 text-sm font-normal text-charcoal/50">/ month</span>
                         )}
                       </p>
-
                       <div className="flex items-center gap-4 border-t border-sand-200 pt-4 text-sm text-charcoal/60">
                         {property.beds !== undefined && (
                           <span className="flex items-center gap-1.5">
@@ -318,17 +316,9 @@ export default function PropertyGrid() {
         ) : (
           <div className="rounded-sm border border-sand-200 bg-white px-8 py-16 text-center">
             <Search className="mx-auto h-10 w-10 text-charcoal/20" />
-            <h3 className="mt-4 font-serif text-xl font-medium text-charcoal">
-              No matching properties
-            </h3>
-            <p className="mt-2 text-sm text-charcoal/60">
-              Try a different location, keyword, or clear your filters.
-            </p>
-            <button
-              type="button"
-              onClick={clearAll}
-              className="mt-6 inline-flex items-center gap-2 rounded-sm bg-copper px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-copper-600"
-            >
+            <h3 className="mt-4 font-serif text-xl font-medium text-charcoal">No matching properties</h3>
+            <p className="mt-2 text-sm text-charcoal/60">Try a different location, keyword, or clear your filters.</p>
+            <button type="button" onClick={clearAll} className="mt-6 rounded-sm bg-copper px-5 py-2.5 text-sm font-medium text-white hover:bg-copper-600">
               Clear search
             </button>
           </div>
