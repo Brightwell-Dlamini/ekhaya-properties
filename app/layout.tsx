@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,7 +16,11 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ekhaya-properties.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Ekhaya Properties | Premium Real Estate Advisory in Eswatini",
     template: "%s | Ekhaya Properties",
@@ -32,10 +37,14 @@ export const metadata: Metadata = {
     "Rent Apartment Mbabane",
   ],
   authors: [{ name: "Ekhaya Properties" }],
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     type: "website",
     locale: "en_SZ",
-    url: "https://ekhaya.co.sz",
+    url: siteUrl,
     siteName: "Ekhaya Properties",
     title: "Ekhaya Properties | Find Your Home in Eswatini",
     description:
@@ -59,6 +68,30 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: siteUrl,
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  name: "Ekhaya Properties",
+  description:
+    "Premium real estate agency and property advisory in Eswatini.",
+  url: siteUrl,
+  email: "info@ekhaya.co.sz",
+  telephone: "+26876780729",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Msakato Street",
+    addressLocality: "Mbabane",
+    addressCountry: "SZ",
+  },
+  areaServed: {
+    "@type": "Country",
+    name: "Eswatini",
+  },
 };
 
 export default function RootLayout({
@@ -69,8 +102,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
         <Navbar />
         <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/#listings", label: "Listings" },
-  { href: "/#buy", label: "Buy" },
-  { href: "/#rent", label: "Rent" },
+  { href: "/listings", label: "Listings" },
+  { href: "/listings?status=For%20Sale", label: "Buy" },
+  { href: "/listings?status=To%20Let", label: "Rent" },
   { href: "/#about", label: "About" },
   { href: "/#contact", label: "Contact" },
 ];
@@ -39,7 +39,6 @@ export default function Navbar() {
         )}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
-          {/* Logo */}
           <Link href="/" className="group flex items-center gap-2">
             <span className="font-serif text-2xl font-medium tracking-tight text-white transition-colors group-hover:text-copper">
               Ekhaya
@@ -49,7 +48,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 lg:flex">
             {navLinks.map((link) => (
               <Link
@@ -62,7 +60,6 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop CTAs */}
           <div className="hidden items-center gap-3 lg:flex">
             <a
               href="https://wa.me/26876780729"
@@ -82,7 +79,6 @@ export default function Navbar() {
             </Button>
           </div>
 
-          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileOpen(true)}
             className="flex h-10 w-10 items-center justify-center text-white lg:hidden"
@@ -93,7 +89,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileOpen && (
           <>
@@ -164,7 +159,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Floating WhatsApp FAB */}
       <a
         href="https://wa.me/26876780729"
         target="_blank"
