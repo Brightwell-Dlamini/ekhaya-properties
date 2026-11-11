@@ -1,60 +1,66 @@
 # Ekhaya Properties
 
-Premium real estate agency website for **Ekhaya Properties**, a leading brokerage based in Mbabane, Eswatini.
+Premium real estate agency website for **Ekhaya Properties**, Mbabane, Eswatini.
 
-## Brand
+**Live:** https://ekhaya-properties.vercel.app  
+**Repo:** https://github.com/Brightwell-Dlamini/ekhaya-properties
 
-**Ekhaya** means “Home”. The site blends modern luxury with the warm, welcoming essence of a family home — designed to the standard of a high-end international advisory firm.
+## Stack
 
-## Tech Stack
+- Next.js 15 (App Router) + TypeScript
+- Tailwind CSS (Charcoal / Sand / Copper)
+- Framer Motion, Lucide icons
+- Vercel deployment
 
-- **Next.js 15** (App Router) + TypeScript
-- **Tailwind CSS** with custom design tokens
-- **Framer Motion** for elegant animations
-- **shadcn/ui-inspired** accessible components
-- **Lucide React** icons
-- **next/image** for optimized imagery
-
-## Design System
-
-| Token        | Value     | Usage                          |
-|--------------|-----------|--------------------------------|
-| Charcoal     | `#1A1A1A` | Primary text, dark sections    |
-| Sand         | `#F5F2EB` | Backgrounds, soft surfaces     |
-| Copper       | `#D35400` | CTAs, accents, active states   |
-| White        | `#FFFFFF` | Cards, high-contrast elements  |
-
-**Typography**
-- Headlines: Playfair Display (serif)
-- Body: Inter (sans-serif)
-
-## Getting Started
+## Getting started
 
 ```bash
+cp .env.example .env.local
 npm install
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Project Structure
+### Environment
+
+See `.env.example`. Important:
+
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL for sitemap, OG, metadata |
+| `FORMSPREE_ENDPOINT` | Optional — forwards contact form submissions |
+
+Without Formspree, enquiries are accepted and logged server-side; WhatsApp remains the primary instant channel.
+
+## Structure
 
 ```
 app/
-  layout.tsx          # Root layout + SEO metadata
-  page.tsx            # Home page composition
-  globals.css
+  page.tsx                 Home
+  listings/page.tsx        Full listings + search
+  properties/[id]/         Property detail
+  privacy/  terms/         Legal
+  api/contact/             Form API
+  sitemap.ts  robots.ts
 components/
-  layout/
-    Navbar.tsx        # Glassmorphism sticky nav + mobile drawer
-  sections/
-    Hero.tsx          # Full-viewport cinematic hero
-    PropertyGrid.tsx  # Filterable listings grid
-  ui/
-    button.tsx
-lib/
-  utils.ts            # cn() helper
+  layout/    Navbar, Footer
+  sections/  Hero, PropertyGrid, About, …
+  forms/     ContactForm
+data/properties.ts         Listing data (replace with CMS later)
 ```
+
+## Custom domain (ekhaya.co.sz)
+
+1. Vercel → Project → Settings → Domains → add `ekhaya.co.sz` and `www.ekhaya.co.sz`
+2. At your DNS provider, add the records Vercel shows (usually A / CNAME)
+3. Set `NEXT_PUBLIC_SITE_URL=https://ekhaya.co.sz` in Vercel env vars and redeploy
+
+## Content updates
+
+- Listings: edit `data/properties.ts` (or connect a CMS)
+- Replace Unsplash URLs with client photography when available
+- Logo: replace `public/logo.svg` and `public/favicon.svg`
 
 ## Contact
 
@@ -62,7 +68,3 @@ lib/
 - Phone: 7602 2772
 - Email: info@ekhaya.co.sz
 - Address: Msakato Street, Mbabane, Eswatini
-
----
-
-Built with precision for the Eswatini market.
